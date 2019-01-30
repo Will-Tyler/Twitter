@@ -60,6 +60,20 @@ class HomeViewController: UITableViewController {
 		})
 	}
 
+	private func loadMoreTweets() {
+		let urlString = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+
+		if let lastTweet = tweets.last, let lastID = lastTweet["id"] as? Int64 {
+			let parameters: [String : Any] = [ "count": 64, "max_id": lastID-1 ]
+
+			TwitterAPICaller.client?.getDictionariesRequest(url: urlString, parameters: parameters, success: { dictionaries in
+				self.tweets.append(contentsOf: dictionaries as! [[String: Any]])
+			}, failure: { error in
+				print(error.localizedDescription)
+			})
+		}
+	}
+
 	@objc
 	private func logoutItemAction() {
 		dismiss(animated: true)
@@ -83,6 +97,11 @@ class HomeViewController: UITableViewController {
 	}
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		tableView.deselectRow(at: indexPath, animated: true)
+	}
+	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+		if indexPath.row + 1 == tweets.count {
+			loadMoreTweets()
+		}
 	}
 
 }
