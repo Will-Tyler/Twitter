@@ -60,7 +60,9 @@ class TweetTableViewCell: UITableViewCell {
 		tweetLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
 		tweetLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor).isActive = true
 		tweetLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-		tweetLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
+
+		bottomAnchor.constraint(greaterThanOrEqualTo: profileImageView.bottomAnchor, constant: 8).isActive = true
+		bottomAnchor.constraint(greaterThanOrEqualTo: tweetLabel.bottomAnchor, constant: 8).isActive = true
 
 		didSetupInitialLayout = true
 	}
