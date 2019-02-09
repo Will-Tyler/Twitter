@@ -38,11 +38,34 @@ class TweetTableViewCell: UITableViewCell {
 
 		return label
 	}()
+	private lazy var favoriteButton: UIButton = {
+		let button = UIButton(type: .custom)
+
+		button.setImage(UIImage(named: "favorite-empty"), for: .normal)
+		button.addTarget(self, action: #selector(favoriteButtonAction), for: .touchUpInside)
+
+		return button
+	}()
+	private lazy var retweetButton: UIButton = {
+		let button = UIButton(type: .custom)
+
+		button.tintColor = .white
+		button.setImage(UIImage(named: "retweet"), for: .normal)
+		button.addTarget(self, action: #selector(retweetButtonAction), for: .touchUpInside)
+
+		return button
+	}()
 
 	private func setupInitialLayout() {
+		let stackView = UIStackView(arrangedSubviews: [retweetButton, favoriteButton])
+
+		stackView.axis = .horizontal
+		stackView.distribution = .equalCentering
+
 		addSubview(profileImageView)
 		addSubview(nameLabel)
 		addSubview(tweetLabel)
+		addSubview(stackView)
 
 		profileImageView.translatesAutoresizingMaskIntoConstraints = false
 		profileImageView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
@@ -61,8 +84,13 @@ class TweetTableViewCell: UITableViewCell {
 		tweetLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor).isActive = true
 		tweetLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
+		stackView.translatesAutoresizingMaskIntoConstraints = false
+		stackView.topAnchor.constraint(equalTo: tweetLabel.bottomAnchor, constant: 8).isActive = true
+		stackView.leadingAnchor.constraint(equalTo: tweetLabel.leadingAnchor).isActive = true
+		stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
 		bottomAnchor.constraint(greaterThanOrEqualTo: profileImageView.bottomAnchor, constant: 8).isActive = true
-		bottomAnchor.constraint(greaterThanOrEqualTo: tweetLabel.bottomAnchor, constant: 8).isActive = true
+		bottomAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 8).isActive = true
 
 		didSetupInitialLayout = true
 	}
@@ -78,6 +106,8 @@ class TweetTableViewCell: UITableViewCell {
 	var tweet: [String: Any]! {
 		didSet {
 			tweetLabel.text = tweet["text"] as? String
+			isFavorited = tweet["favorited"] as? Bool ?? false
+			isRetweeted = tweet["retweeted"] as? Bool ?? false
 
 			if let user = tweet["user"] as? [String: Any] {
 				nameLabel.text = user["name"] as? String
@@ -90,6 +120,70 @@ class TweetTableViewCell: UITableViewCell {
 			if !didSetupInitialLayout {
 				setupInitialLayout()
 			}
+		}
+	}
+	private var isFavorited: Bool = false {
+		didSet {
+			let image: UIImage?
+
+			if isFavorited {
+				image = UIImage(named: "favorite")
+			}
+			else {
+				image = UIImage(named: "favorite-empty")
+			}
+
+			favoriteButton.tintColor = isFavorited ? .red : .white
+			favoriteButton.setImage(image, for: .normal)
+		}
+	}
+	private var isRetweeted: Bool = false {
+		didSet {
+			retweetButton.tintColor = isRetweeted ? .green : .white
+		}
+	}
+
+	@objc
+	private func favoriteButtonAction() {
+		guard let id = tweet["id"] as? Int else {
+			return
+		}
+
+		if isFavorited {
+			TwitterAPICaller.client?.unfavorite(tweetID: id, success: {
+				self.isFavorited = false
+			}, failure: { error in
+				print(error.localizedDescription)
+			})
+		}
+		else {
+			TwitterAPICaller.client?.favorite(tweetID: id, success: {
+				self.isFavorited = true
+			}, failure: { error in
+				print(error.localizedDescription)
+			})
+		}
+	}
+
+	@objc
+	private func retweetButtonAction() {
+		guard let id = tweet["id"] as? Int else {
+			return
+		}
+
+		if isRetweeted {
+			TwitterAPICaller.client?.unretweet(tweetID: id, success: {
+				self.isRetweeted = false
+			}, failure: { error in
+				print(error.localizedDescription)
+			})
+		}
+		else {
+			TwitterAPICaller.client?.retweet(tweetID: id, success: {
+				self.isRetweeted = true
+			}, failure: { error in
+				print(error.localizedDescription)
+			})
 		}
 	}
 

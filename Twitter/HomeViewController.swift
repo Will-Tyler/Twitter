@@ -26,16 +26,25 @@ class HomeViewController: UITableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		let logoutItem = UIBarButtonItem(title: "Logout", style: UIBarButtonItem.Style.plain, target: self, action: #selector(logoutItemAction))
+		let logoutItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutItemAction))
+		let tweetItem = UIBarButtonItem(title: "Tweet", style: .plain, target: self, action: #selector(tweetItemAction))
 		
 		logoutItem.tintColor = Colors.twitter
+		tweetItem.tintColor = Colors.twitter
 
 		navigationItem.setLeftBarButton(logoutItem, animated: false)
+		navigationItem.setRightBarButton(tweetItem, animated: false)
 		tableView.register(TweetTableViewCell.self, forCellReuseIdentifier: TweetTableViewCell.cellID)
+		tableView.showsVerticalScrollIndicator = false
 		view.backgroundColor = Colors.dark
 
 		refreshControl = UIRefreshControl()
 		refreshControl?.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
+
+		loadTweets()
+	}
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
 
 		loadTweets()
 	}
@@ -79,6 +88,13 @@ class HomeViewController: UITableViewController {
 		dismiss(animated: true)
 		TwitterAPICaller.client?.logout()
 		Defaults.isLoggedIn = false
+	}
+
+	private lazy var composerViewController = TweetComposerViewController()
+
+	@objc
+	private func tweetItemAction() {
+		navigationController?.pushViewController(composerViewController, animated: true)
 	}
 
 	override func numberOfSections(in tableView: UITableView) -> Int {
