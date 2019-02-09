@@ -22,7 +22,7 @@ The following **bonus** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://github.com/willtyler98/Twitter/blob/develop/Twitter2.gif?raw=true' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/willtyler98/Twitter/blob/master/Twitter2.gif?raw=true' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 # Project 3 - *Twitter*
 
@@ -49,5 +49,5 @@ The following **bonus** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://github.com/willtyler98/Twitter/blob/develop/Twitter.gif?raw=true' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/willtyler98/Twitter/blob/master/Twitter.gif?raw=true' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
